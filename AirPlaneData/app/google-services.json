@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "176761378841",
+    "firebase_url": "https://airplanedata-e5733.firebaseio.com",
+    "project_id": "airplanedata-e5733",
+    "storage_bucket": "airplanedata-e5733.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176761378841:android:0b900cde088a781eebb288",
+        "android_client_info": {
+          "package_name": "com.example.airplanedata"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "176761378841-fpt8updmdjifnon2kle6nck01mkit0q0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.airplanedata",
+            "certificate_hash": "152c62d3c743ee03c7b9b41395792c8f857a128f"
+          }
+        },
+        {
+          "client_id": "176761378841-1a7r1erh1d80shjj3nruu2avhlofn9ar.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjjPdBwdTrqVjQeBdV_tuNTuZYfoxOHLk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "176761378841-1a7r1erh1d80shjj3nruu2avhlofn9ar.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
