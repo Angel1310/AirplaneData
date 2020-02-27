@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.protobuf.StringValueOrBuilder;
 
 import java.util.Objects;
 
@@ -34,6 +35,7 @@ public class HomeActivity extends AppCompatActivity {
     TextView fullName,email;
     FirebaseAuth fAuth;
     FirebaseUser user;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
     FirebaseFirestore fStore;
     String userId;
 
@@ -51,14 +53,36 @@ public class HomeActivity extends AppCompatActivity {
         userId = user.getUid();
 
 
-        DocumentReference documentReference = fStore.collection("users").document(userId);
-        documentReference.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+        DatabaseReference userNameRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("fName");
+        DatabaseReference userEmailRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("email");
+        userNameRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                fullName.setText(documentSnapshot.getString("fName"));
-                email.setText(documentSnapshot.getString("email"));
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                fullName.setText(dataSnapshot.getValue(String.class));
+
             }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
+        userEmailRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //email.setText(dataSnapshot.getValue(String.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
 
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +141,7 @@ public class HomeActivity extends AppCompatActivity {
 //                email.setText(documentSnapshot.getString("email"));
 //            }
 //
-      });
+
       }
             public void logout(View view) {
                 FirebaseAuth.getInstance().signOut();//logout

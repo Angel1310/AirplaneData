@@ -21,6 +21,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -119,20 +122,36 @@ public class MainActivity extends AppCompatActivity {
                             Map<String,Object> user = new HashMap<>();
                             user.put("fName",fullName);
                             user.put("email",email);
+                            DatabaseReference userDbRef = FirebaseDatabase.getInstance()
+                                    .getReference().child("users")
+                                    .child(userID);
+                            userDbRef.setValue(user)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
 
-                            fStore.collection("users").add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    Log.d(TAG, "onSuccess: user Profile is created for "+ userID);
-                                }
-
-
-                            }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Log.d(TAG, "onSuccess: user Profile is created for "+ userID);
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     Log.d(TAG, "onFailure: " + e.toString());
                                 }
                             });
+
+//                            fStore.collection("users").add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+//                                @Override
+//                                public void onSuccess(DocumentReference documentReference) {
+//                                    Log.d(TAG, "onSuccess: user Profile is created for "+ userID);
+//                                }
+//
+//
+//                            }).addOnFailureListener(new OnFailureListener() {
+//                                @Override
+//                                public void onFailure(@NonNull Exception e) {
+//                                    Log.d(TAG, "onFailure: " + e.toString());
+//                                }
+//                            });
                             startActivity(new Intent(getApplicationContext(),HomeActivity.class));
                             finish();
 
@@ -165,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(),DataActivity.class));
+                startActivity(new Intent(getApplicationContext(), GraphSpeedActivity.class));
             }
         });
 
