@@ -42,47 +42,49 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home);
 
         fullName = findViewById(R.id.profileName);
         email    = findViewById(R.id.profileEmail);
 
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
-        user = fAuth.getInstance().getCurrentUser();
+        user = fAuth.getCurrentUser();
+        assert user != null;
         userId = user.getUid();
 
 
-        DatabaseReference userNameRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("fName");
-        DatabaseReference userEmailRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("email");
-        userNameRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                fullName.setText(dataSnapshot.getValue(String.class));
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-
-        });
-        userEmailRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                //email.setText(dataSnapshot.getValue(String.class));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-
-        });
+//        DatabaseReference userNameRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("fName");
+//        DatabaseReference userEmailRef = FirebaseDatabase.getInstance().getReference().child("users").child(userId).child("email");
+//        userNameRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                fullName.setText(dataSnapshot.getValue(String.class));
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//
+//
+//        });
+//        userEmailRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                //email.setText(dataSnapshot.getValue(String.class));
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//
+//
+//        });
 
 //    @Override
 //    protected void onCreate(Bundle savedInstanceState) {
@@ -143,8 +145,14 @@ public class HomeActivity extends AppCompatActivity {
 //
 
       }
+
+            public void add(View view) {
+
+                startActivity(new Intent(getApplicationContext(),UserActivity.class));
+
+            }
             public void logout(View view) {
-                FirebaseAuth.getInstance().signOut();//logout
+                FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(getApplicationContext(), LoginActivity.class));
                 finish();
             }
