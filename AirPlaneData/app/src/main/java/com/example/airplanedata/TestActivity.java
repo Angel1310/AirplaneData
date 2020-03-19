@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -56,6 +57,10 @@ public class TestActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     Map<String, String> data = new HashMap<>();
+    private LineDataSet set1;
+    private LineDataSet set2;
+    final ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+    LineData data2;
 
 
     Spinner sp ;
@@ -93,90 +98,66 @@ public class TestActivity extends AppCompatActivity {
         mChart.setScaleEnabled(false);
 
 
+        CreateSets();
+        Log.d(TAG, "hi there, " + set1);
 
 
 
 
-        database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Temperature").addValueEventListener(new ValueEventListener() {
-            public void onDataChange(DataSnapshot result) {
-                final ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-                final List<String> lst = new ArrayList<String>();
-                int i=0;
-                final ArrayList<Entry> values = new ArrayList<>();
-                for (DataSnapshot dsp : result.getChildren()) {
-                    lst.add(String.valueOf(dsp.getValue()));
-                }
-
-
-                for (String dsp : lst) {
-                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
-                }
 
 
 
 
-//                int count =0;
-//                final ArrayList<Entry> values = new ArrayList<>();
-//                final java.util.List<String> lst = new ArrayList<String>();
+
+
+//            ValueEventListener postListener = new ValueEventListener() {
+//            public void onDataChange(DataSnapshot result) {
+//
+//                 List<String> lst = new ArrayList<String>();
+//                int i=0;
+//
 //                for (DataSnapshot dsp : result.getChildren()) {
-//                    textView9.setText( dsp.getKey());
-//                    //values.add(new Entry (count+=2, (Integer)dsp.getValue()));
+//                    lst.add(String.valueOf(dsp.getValue()));
 //                }
-
-
-                final LineDataSet set1 = new LineDataSet(values, "SET 1");
-                set1.setColor(Color.YELLOW);
-
-
-                database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Pressure").addValueEventListener(new ValueEventListener() {
-                    public void onDataChange(DataSnapshot result) {
-                        final List<String> lst2 = new ArrayList<String>();
-                        int j=0;
-                        final ArrayList<Entry> values2 = new ArrayList<>();
-                        for (DataSnapshot dsp : result.getChildren()) {
-                            lst.add(String.valueOf(dsp.getValue()));
-                        }
-
-
-                        for (String dsp : lst2) {
-                            values2.add(new Entry(j+=2, Integer.valueOf(dsp)));
-                        }
-
-
-
-
-
-
-                        LineDataSet set2 = new LineDataSet(values2, "SET 2");
-
-
-                        dataSets.add(set1);
-                        set2.setColor(Color.RED);
-                        dataSets.add(set2);
-                        LineData data2 = new LineData(dataSets);
-                        mChart.setData(data2);
-
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
+//
+//
+//                for (String dsp : lst) {
+//                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
+//                }
+//
+//
+//
+//
+////                int count =0;
+////                final ArrayList<Entry> values = new ArrayList<>();
+////                final java.util.List<String> lst = new ArrayList<String>();
+////                for (DataSnapshot dsp : result.getChildren()) {
+////                    textView9.setText( dsp.getKey());
+////                    //values.add(new Entry (count+=2, (Integer)dsp.getValue()));
+////                }
+//
+//
+//                 LineDataSet set1 = new LineDataSet(values, "SET 1");
+//                set1.setColor(Color.YELLOW);
+//                dataSets.add(set1);
+//
+//
+//
+//
+//
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        };
+//        database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Temperature").addValueEventListener(postListener);
+//        LineData data2 = new LineData(dataSets);
+//        mChart.setData(data2);
+//
 
 
 
@@ -185,4 +166,71 @@ public class TestActivity extends AppCompatActivity {
 
 
     }
+
+    private void CreateSets() {
+        database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Temperature").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final ArrayList<Entry> values = new ArrayList<>();
+                List<String> lst = new ArrayList<String>();
+                int i=0;
+
+                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
+                    lst.add(String.valueOf(dsp.getValue()));
+                }
+
+
+                for (String dsp : lst) {
+                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
+                }
+
+                set1 = new LineDataSet(values, "SET 1");
+                set1.setColor(Color.YELLOW);
+
+                       
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+        database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Pressure").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final ArrayList<Entry> values = new ArrayList<>();
+                List<String> lst = new ArrayList<String>();
+                int i=0;
+
+                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
+                    lst.add(String.valueOf(dsp.getValue()));
+                }
+
+
+                for (String dsp : lst) {
+                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
+                }
+
+                set2 = new LineDataSet(values, "SET 2");
+                set2.setColor(Color.RED);
+
+
+                addDataSets();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+    }
+
+
+    public void addDataSets() {
+        dataSets.add(set1);
+        dataSets.add(set2);
+         data2 = new LineData(dataSets);
+        mChart.setData(data2);
+
+        Log.d(TAG, "hi there, " + set1);
+    }
+
+
 }
+
