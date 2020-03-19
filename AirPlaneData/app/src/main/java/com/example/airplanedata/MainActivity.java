@@ -139,33 +139,11 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
 
-//                            fStore.collection("users").add(user).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-//                                @Override
-//                                public void onSuccess(DocumentReference documentReference) {
-//                                    Log.d(TAG, "onSuccess: user Profile is created for "+ userID);
-//                                }
-//
-//
-//                            }).addOnFailureListener(new OnFailureListener() {
-//                                @Override
-//                                public void onFailure(@NonNull Exception e) {
-//                                    Log.d(TAG, "onFailure: " + e.toString());
-//                                }
-//                            });
+
                             startActivity(new Intent(getApplicationContext(),HomeActivity.class));
                             finish();
 
-//                                @Override
 
-//                                public void onSuccess(Void aVoid) {
-//                                    Log.d(TAG, "onSuccess: user Profile is created for "+ userID);
-//                                }
-//                        ).addOnFailureListener(new OnFailureListener() {
-//                                @Override
-//                                public void onFailure(@NonNull Exception e) {
-//                                    Log.d(TAG, "onFailure: " + e.toString());
-//                                }
-//                            });
 
 
 
