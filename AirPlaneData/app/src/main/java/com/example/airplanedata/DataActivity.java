@@ -49,18 +49,15 @@ public class DataActivity extends AppCompatActivity {
     String userId;
     private static final String TAG = "";
     FirebaseDatabase database;
-    TextView textView6, textView3, textView7;
+    TextView textView6, textView3, textView7, textView5;
 
-    ArrayList<TextView> List = new ArrayList<>();
-    ArrayList<String> L = new ArrayList<>();
+
     Handler handler = new Handler();
     Runnable refresh, refreshForGraph;
-    SimpleDateFormat sdf= new SimpleDateFormat("hh:mm:ss");
 
 
 
-    SharedPreferences sharedPreferences;
-    Map<String, String> data = new HashMap<>();
+
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -70,26 +67,10 @@ public class DataActivity extends AppCompatActivity {
         Name= extras.getString("Name");
 
 
-//        if (savedInstanceState == null) {
-//            Bundle extras = getIntent().getExtras();
-//            if (extras == null) {
-//                System = null;
-//                Name = null;
-//
-//
-//            } else {
-//                System = extras.getString("STRING_I_NEED");
-//                Name = extras.getString("Name");
-//
-//            }
-//        } else {
-//            System = (String) savedInstanceState.getSerializable("STRING_I_NEED");
-//            Name = (String) savedInstanceState.getSerializable("Name");
-//
-//        }
+
 
         super.onCreate(savedInstanceState);
-        String[] views = {"Test/BME680/Pressure", "Test/BME680/GAS", "Test/BME680/Temperature"};
+
         database = FirebaseDatabase.getInstance();
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
@@ -101,9 +82,7 @@ public class DataActivity extends AppCompatActivity {
         textView6 = findViewById(R.id.textView6);
         textView3 = findViewById(R.id.textView3);
         textView7 = findViewById(R.id.textView7);
-        List.add(textView6);
-        List.add(textView3);
-        List.add(textView7);
+        textView5 = findViewById(R.id.textView5);
 
 
 
@@ -113,8 +92,8 @@ public class DataActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String value = dataSnapshot.getValue(Double.class).toString();
-                textView3.setText(value + " C");
+                String value = String.valueOf(round( dataSnapshot.getValue(Double.class),2));
+                textView3.setText(value + " *C");
                 Log.d(TAG, "Value is: " + value);
             }
 
@@ -131,8 +110,24 @@ public class DataActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String value = dataSnapshot.getValue(Double.class).toString();
-                textView7.setText(value + " GAS");
+                String value = String.valueOf(round( dataSnapshot.getValue(Double.class),2));
+                textView7.setText(value + " KOhms");
+                Log.d(TAG, "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+        database.getReference(new StringBuilder("Systems/").append(System).append("Speed").toString()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String value = String.valueOf(round( dataSnapshot.getValue(Double.class),2));
+                textView5.setText(value + " km/h");
                 Log.d(TAG, "Value is: " + value);
             }
 
@@ -148,7 +143,7 @@ public class DataActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 String value = dataSnapshot.getValue(Double.class).toString();
-                textView6.setText(value + " PH");
+                textView6.setText(value + " hPa");
                 Log.d(TAG, "Value is: " + value);
             }
 
@@ -208,6 +203,44 @@ public class DataActivity extends AppCompatActivity {
 
                         }
                     });
+                    database.getReference(new StringBuilder("Systems/").append(System).append("Speed").toString()).addValueEventListener(new ValueEventListener() {
+                        final String id = database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Speed").push().getKey();
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            int y=0;
+                            y = dataSnapshot.getValue(Integer.class);
+
+                            database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Speed").child(id).setValue(y);
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                    database.getReference(new StringBuilder("Systems/").append(System).append("/BME680/GAS").toString()).addValueEventListener(new ValueEventListener() {
+                        final String id = database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("GAS").push().getKey();
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            int y=0;
+                            y = dataSnapshot.getValue(Integer.class);
+
+                            database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("GAS").child(id).setValue(y);
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 }
 
                 handler.postDelayed(refreshForGraph, 5000);
@@ -218,13 +251,24 @@ public class DataActivity extends AppCompatActivity {
 
 
     }
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
+    }
 
 
 
 
     public void Stop(View view) {
         Recording = false;
+        handler.removeCallbacks(refreshForGraph);
+        handler.removeCallbacks(refresh);
         startActivity(new Intent(getApplicationContext(),HomeActivity.class));
+
 
     }
 }

@@ -13,14 +13,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,6 +44,7 @@ public class TestActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     String System, Name;
     boolean Recording = true;
+    Button button;
     FirebaseUser user;
     FirebaseFirestore fStore;
     String userId;
@@ -48,18 +52,17 @@ public class TestActivity extends AppCompatActivity {
     FirebaseDatabase database;
     TextView textView9;
 
-    ArrayList<TextView> List = new ArrayList<>();
-    ArrayList<String> L = new ArrayList<>();
-    Handler handler = new Handler();
-    private LineChart mChart;
-    Runnable refresh, refreshForGraph;
-    SimpleDateFormat sdf= new SimpleDateFormat("hh:mm:ss");
 
-    SharedPreferences sharedPreferences;
-    Map<String, String> data = new HashMap<>();
-    private LineDataSet set1;
-    private LineDataSet set2;
+    private LineChart mChart;
+
+
+
+
+    private LineDataSet temperatureSet;
+    private LineDataSet pressureSet;
+    private LineDataSet gasSet;
     final ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+    ArrayList<ILineDataSet> addDataSets = new ArrayList<>(); ;
     LineData data2;
 
 
@@ -79,6 +82,7 @@ public class TestActivity extends AppCompatActivity {
         Name= extras.getString("Name");
         textView9 = findViewById(R.id.textView9);
 
+
         super.onCreate(savedInstanceState);
         database = FirebaseDatabase.getInstance();
         fAuth = FirebaseAuth.getInstance();
@@ -87,6 +91,7 @@ public class TestActivity extends AppCompatActivity {
         assert user != null;
         userId = user.getUid();
         setContentView(R.layout.activity_test);
+        button = findViewById(R.id.buttonn);
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         user = fAuth.getCurrentUser();
@@ -94,74 +99,56 @@ public class TestActivity extends AppCompatActivity {
         userId = user.getUid();
         sp = (Spinner)findViewById(R.id.spinner);
         mChart = (LineChart) findViewById(R.id.linechart);
-        mChart.setDragEnabled(true);
-        mChart.setScaleEnabled(false);
-
-
-        CreateSets();
-        Log.d(TAG, "hi there, " + set1);
-
-
-
-
-
+//        mChart.setDragEnabled(true);
+//        mChart.setScaleEnabled(false);
+//        mChart.setScaleMinima(0f, 0f);
+//        mChart.fitScreen();
+//        float scaleX = chart.getScaleX();
+//        float scaleY = chart.getScaleY();
+//        float xValue = chart.getViewPortHandler().getContentCenter().x;
+//        float yValue = chart.getViewPortHandler().getContentCenter().y;
 
 
 
 
 
-//            ValueEventListener postListener = new ValueEventListener() {
-//            public void onDataChange(DataSnapshot result) {
-//
-//                 List<String> lst = new ArrayList<String>();
-//                int i=0;
-//
-//                for (DataSnapshot dsp : result.getChildren()) {
-//                    lst.add(String.valueOf(dsp.getValue()));
-//                }
-//
-//
-//                for (String dsp : lst) {
-//                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
-//                }
-//
-//
-//
-//
-////                int count =0;
-////                final ArrayList<Entry> values = new ArrayList<>();
-////                final java.util.List<String> lst = new ArrayList<String>();
-////                for (DataSnapshot dsp : result.getChildren()) {
-////                    textView9.setText( dsp.getKey());
-////                    //values.add(new Entry (count+=2, (Integer)dsp.getValue()));
-////                }
-//
-//
-//                 LineDataSet set1 = new LineDataSet(values, "SET 1");
-//                set1.setColor(Color.YELLOW);
-//                dataSets.add(set1);
-//
-//
-//
-//
-//
-//
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        };
-//        database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Temperature").addValueEventListener(postListener);
-//        LineData data2 = new LineData(dataSets);
-//        mChart.setData(data2);
-//
+        final List<String> lst = new ArrayList<String>();
+        lst.add("Pressure");
+        lst.add("Temperature");
+        lst.add("GAS");
 
 
 
 
+
+                adapter = new ArrayAdapter<String>(TestActivity.this, android.R.layout.simple_list_item_1, lst);
+
+                sp.setAdapter(adapter);
+                sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, final int position, long id) {
+
+                        button.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                record = lst.get(position);
+                                CreateSets();
+                            }
+
+
+                        });
+
+
+                }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+
+
+                });
 
 
 
@@ -179,16 +166,15 @@ public class TestActivity extends AppCompatActivity {
                     lst.add(String.valueOf(dsp.getValue()));
                 }
 
-
                 for (String dsp : lst) {
                     values.add(new Entry(i+=2, Integer.valueOf(dsp)));
                 }
 
-                set1 = new LineDataSet(values, "SET 1");
-                set1.setColor(Color.YELLOW);
+                temperatureSet = new LineDataSet(values, "Temperature");
+                temperatureSet.setColor(Color.YELLOW);
 
-                       
-                    }
+
+            }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {}
@@ -209,8 +195,35 @@ public class TestActivity extends AppCompatActivity {
                     values.add(new Entry(i+=2, Integer.valueOf(dsp)));
                 }
 
-                set2 = new LineDataSet(values, "SET 2");
-                set2.setColor(Color.RED);
+                pressureSet = new LineDataSet(values, "Pressure");
+                pressureSet.setColor(Color.RED);
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+        database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("GAS").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final ArrayList<Entry> values = new ArrayList<>();
+                List<String> lst = new ArrayList<String>();
+                int i=0;
+
+                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
+                    lst.add(String.valueOf(dsp.getValue()));
+                }
+
+
+                for (String dsp : lst) {
+                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
+                }
+
+                gasSet = new LineDataSet(values, "GAS");
+                gasSet.setColor(Color.GREEN);
+                dataSets.add(gasSet);
 
 
                 addDataSets();
@@ -223,13 +236,26 @@ public class TestActivity extends AppCompatActivity {
 
 
     public void addDataSets() {
-        dataSets.add(set1);
-        dataSets.add(set2);
-         data2 = new LineData(dataSets);
+
+
+        dataSets.add(temperatureSet);
+
+
+        dataSets.add(pressureSet);
+
+        for (ILineDataSet set : dataSets) {
+            if (set.getLabel().equals(record)) {
+                addDataSets.add(set);
+            }
+        }
+
+        data2 = new LineData(addDataSets);
         mChart.setData(data2);
 
-        Log.d(TAG, "hi there, " + set1);
+
     }
+
+
 
 
 }
