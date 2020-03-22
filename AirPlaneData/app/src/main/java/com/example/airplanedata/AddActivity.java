@@ -3,6 +3,7 @@ package com.example.airplanedata;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -67,10 +68,18 @@ public class AddActivity extends AppCompatActivity {
                         Log.d(TAG, "onFailure: " + e.toString());
                     }
                 });
+                startActivity(new Intent(getApplicationContext(),HomeActivity.class));
             }
+
+
         });
 
 
+
+
+    }
+    public void back(View view) {
+        startActivity(new Intent(getApplicationContext(),HomeActivity.class));
 
     }
 }

@@ -73,5 +73,8 @@ public class HomeActivity extends AppCompatActivity {
     public void start(View view) {
         startActivity(new Intent(getApplicationContext(),StartActivity.class));
     }
+    public void profile(View view) {
+        startActivity(new Intent(getApplicationContext(),UserActivity.class));
+    }
 
 }

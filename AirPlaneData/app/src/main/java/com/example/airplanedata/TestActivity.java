@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -61,6 +62,7 @@ public class TestActivity extends AppCompatActivity {
     private LineDataSet temperatureSet;
     private LineDataSet pressureSet;
     private LineDataSet gasSet;
+    private LineDataSet speedSet;
     final ArrayList<ILineDataSet> dataSets = new ArrayList<>();
     ArrayList<ILineDataSet> addDataSets = new ArrayList<>(); ;
     LineData data2;
@@ -80,7 +82,7 @@ public class TestActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         System = extras.getString("System");
         Name= extras.getString("Name");
-        textView9 = findViewById(R.id.textView9);
+
 
 
         super.onCreate(savedInstanceState);
@@ -116,6 +118,7 @@ public class TestActivity extends AppCompatActivity {
         lst.add("Pressure");
         lst.add("Temperature");
         lst.add("GAS");
+        lst.add("Speed");
 
 
 
@@ -167,7 +170,7 @@ public class TestActivity extends AppCompatActivity {
                 }
 
                 for (String dsp : lst) {
-                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
+                    values.add(new Entry(i+=2, Float.valueOf(dsp)));
                 }
 
                 temperatureSet = new LineDataSet(values, "Temperature");
@@ -192,7 +195,7 @@ public class TestActivity extends AppCompatActivity {
 
 
                 for (String dsp : lst) {
-                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
+                    values.add(new Entry(i+=2, Float.valueOf(dsp)));
                 }
 
                 pressureSet = new LineDataSet(values, "Pressure");
@@ -218,7 +221,7 @@ public class TestActivity extends AppCompatActivity {
 
 
                 for (String dsp : lst) {
-                    values.add(new Entry(i+=2, Integer.valueOf(dsp)));
+                    values.add(new Entry(i+=2, Float.valueOf(dsp)));
                 }
 
                 gasSet = new LineDataSet(values, "GAS");
@@ -226,6 +229,31 @@ public class TestActivity extends AppCompatActivity {
                 dataSets.add(gasSet);
 
 
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Speed").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final ArrayList<Entry> values = new ArrayList<>();
+                List<String> lst = new ArrayList<String>();
+                int i=0;
+
+                for (DataSnapshot dsp : dataSnapshot.getChildren()) {
+                    lst.add(String.valueOf(dsp.getValue()));
+                }
+
+
+                for (String dsp : lst) {
+                    values.add(new Entry(i+=2, (float) round( Double.valueOf(dsp),2)));
+                }
+
+                speedSet = new LineDataSet(values, "Speed");
+                speedSet.setColor(Color.BLUE);
                 addDataSets();
             }
 
@@ -239,6 +267,7 @@ public class TestActivity extends AppCompatActivity {
 
 
         dataSets.add(temperatureSet);
+        dataSets.add(speedSet);
 
 
         dataSets.add(pressureSet);
@@ -253,6 +282,22 @@ public class TestActivity extends AppCompatActivity {
         mChart.setData(data2);
 
 
+    }
+    public void map(View view) {
+        startActivity(new Intent(getApplicationContext(),MapsActivity.class));
+    }
+    public void back(View view) {
+        startActivity(new Intent(getApplicationContext(),DataActivity.class));
+
+    }
+
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        long factor = (long) Math.pow(10, places);
+        value = value * factor;
+        long tmp = Math.round(value);
+        return (double) tmp / factor;
     }
 
 

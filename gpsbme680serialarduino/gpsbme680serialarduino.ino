@@ -24,6 +24,15 @@ Adafruit_BME680 bme;
 
 String message = "";
 bool messageReady = false;
+//float V_0 = 5.0; // supply voltage to the pressure sensor
+//float rho = 1.204; // density of air 
+//// parameters for averaging and offset
+//int offset = 0;
+//int offset_size = 10;
+//int veloc_mean_size = 20;
+//int zero_span = 2;
+     
+double asOffsetV = 0.0;
 
 void setup() {
   Serial.begin(9600);
@@ -47,9 +56,50 @@ void setup() {
   bme.setPressureOversampling(BME680_OS_4X);
   bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
   bme.setGasHeater(320, 150); // 320*C for 150 ms
+  
+//  for (int ii=0;ii<offset_size;ii++){
+//    offset += analogRead(A0)-(1023/2);
+//  }
+//  offset /= offset_size;
+asOffsetV = analogRead(A0) * .0047;
 }
 
 void loop() {
+// float adc_avg = 0; float veloc = 0.0;
+//  
+//// average a few ADC readings for stability
+//  for (int ii=0;ii<veloc_mean_size;ii++){
+//    adc_avg+= analogRead(A0)-offset;
+//  }
+//  adc_avg/=veloc_mean_size;
+//  
+//  // make sure if the ADC reads below 512, then we equate it to a negative velocity
+//  if (adc_avg>512-zero_span and adc_avg<512+zero_span){
+//  } else{
+//    if (adc_avg<512){
+//      veloc = -sqrt((-10000.0*((adc_avg/1023.0)-0.5))/rho);
+//    } else{
+//      veloc = sqrt((10000.0*((adc_avg/1023.0)-0.5))/rho);
+//    }
+//  }
+  double asVolts = 0.0;
+  double compVOut = 0.0;
+  double dynPress = 0.0;
+  double airSpeed = 0.0;
+  
+  asVolts = analogRead(A0) * .0047;  
+  compVOut = asVolts - asOffsetV;
+  //dynPress = (compVOut / 5.0 - .2) / .2;  // Transfer function with no autozero
+  if(compVOut < .005)  {                    // Set noise to 0, min speed is ~8mph
+    compVOut = 0.0;
+  }  
+  //dynPress = compVOut * 1000.0;          // With autozero, dynamic pressure in kPa = Vout, convert kPa to P
+ airSpeed = sqrt((2 * compVOut * 1000.0)/1.225);   // Converts pressure to m/s, 1.225 k/m3 is standard air density
+//  
+   
+
+  
+
   imu.read();
  
   while(Serial.available()) {
@@ -69,6 +119,7 @@ void loop() {
       messageReady = false;
       return;
     }
+    
     if(doc["type"] == "request") {
       doc["type"] = "response";
      
@@ -83,6 +134,8 @@ void loop() {
       doc["G_X"] = imu.g.x;
       doc["G_Y"] = imu.g.y;
       doc["G_Z"] = imu.g.z;
+      doc["Speed"] = airSpeed;
+      
 //      
 //      if(gps.location.isUpdated()){
 //        

@@ -122,12 +122,12 @@ public class DataActivity extends AppCompatActivity {
             }
         });
 
-        database.getReference(new StringBuilder("Systems/").append(System).append("Speed").toString()).addValueEventListener(new ValueEventListener() {
+        database.getReference(new StringBuilder("Systems/").append(System).append("/Speed").toString()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String value = String.valueOf(round( dataSnapshot.getValue(Double.class),2));
-                textView5.setText(value + " km/h");
+                String value = String.valueOf(dataSnapshot.getValue(Float.class));
+                textView5.setText(value + " m/s");
                 Log.d(TAG, "Value is: " + value);
             }
 
@@ -142,7 +142,7 @@ public class DataActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String value = dataSnapshot.getValue(Double.class).toString();
+                String value = String.valueOf(round( dataSnapshot.getValue(Double.class),2));
                 textView6.setText(value + " hPa");
                 Log.d(TAG, "Value is: " + value);
             }
@@ -171,8 +171,8 @@ public class DataActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            int y=0;
-                            y = dataSnapshot.getValue(Integer.class);
+                            float y=0;
+                            y = (float) round(dataSnapshot.getValue(Double.class),2);
 
                             database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Temperature").child(id).setValue(y);
 
@@ -190,8 +190,8 @@ public class DataActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            int y=0;
-                            y = dataSnapshot.getValue(Integer.class);
+                            float y=0;
+                            y = (float) round(dataSnapshot.getValue(Float.class),2);
 
                             database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Pressure").child(id).setValue(y);
 
@@ -203,13 +203,13 @@ public class DataActivity extends AppCompatActivity {
 
                         }
                     });
-                    database.getReference(new StringBuilder("Systems/").append(System).append("Speed").toString()).addValueEventListener(new ValueEventListener() {
+                    database.getReference(new StringBuilder("Systems/").append(System).append("/Speed").toString()).addValueEventListener(new ValueEventListener() {
                         final String id = database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Speed").push().getKey();
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            int y=0;
-                            y = dataSnapshot.getValue(Integer.class);
+                            float y=0;
+                            y = dataSnapshot.getValue(Float.class);
 
                             database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Speed").child(id).setValue(y);
 
@@ -227,8 +227,8 @@ public class DataActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            int y=0;
-                            y = dataSnapshot.getValue(Integer.class);
+                            float y=0;
+                            y = (float) round(dataSnapshot.getValue(Double.class),2);
 
                             database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("GAS").child(id).setValue(y);
 
@@ -259,6 +259,10 @@ public class DataActivity extends AppCompatActivity {
         long tmp = Math.round(value);
         return (double) tmp / factor;
     }
+//    public void map(View view) {
+//        startActivity(new Intent(getApplicationContext(),MapsActivity.class));
+//
+//    }
 
 
 

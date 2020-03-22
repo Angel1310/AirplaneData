@@ -33,10 +33,12 @@ void setup()
   Firebase.reconnectWiFi(true); 
   firebaseData.setBSSLBufferSize(1024, 1024);  
   firebaseData.setResponseSize(1024);
+    
   
   Firebase.setReadTimeout(firebaseData, 1000 * 60);
 
   Firebase.setwriteSizeLimit(firebaseData, "tiny");
+ 
 
 
   
@@ -45,6 +47,7 @@ void setup()
 void loop()
 {
   delay(1000);
+  
   handleIndex();
   delay(1000);
 }
@@ -55,6 +58,7 @@ void handleIndex(){
   double gas = 0, pressure = 0, temperature=0, humidity=0, Altitude=0 ;
   double satelliteCount = 0, Latitude = 0, Longitude = 0, MPH=0,Feet=0;
   double A_X=0, A_Y=0, A_Z=0,G_X=0, G_Y=0, G_Z=0;
+  float windspeedcorrected = 0;
   // Sending the request
   doc["type"] = "request";
   
@@ -89,6 +93,8 @@ void handleIndex(){
   G_Y = doc["G_Y"];
   G_Z = doc["G_Z"];
   
+  windspeedcorrected = doc["Speed"];
+//  
 //  satelliteCount = doc["Satellite Count"];
 //  Latitude = doc["Latitude"];
 //  Longitude = doc["Longitude"];
@@ -96,18 +102,20 @@ void handleIndex(){
 //  Feet = doc["Altitude Feet"];
   
   
-  Firebase.setDouble(firebaseData, "/Test/BME680/Pressure", pressure);
-  Firebase.setDouble(firebaseData, "/Test/BME680/GAS", gas);
-  Firebase.setDouble(firebaseData, "/Test/BME680/Humidity", humidity);
-  Firebase.setDouble(firebaseData, "/Test/BME680/Approx-Altitude", Altitude);
-  Firebase.setDouble(firebaseData, "/Test/BME680/Temperature", temperature);
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/BME680/Pressure", pressure);
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/BME680/GAS", gas);
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/BME680/Humidity", humidity);
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/BME680/Approx-Altitude", Altitude);
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/BME680/Temperature", temperature);
 
-  Firebase.setDouble(firebaseData, "/Test/MinIMU-9/Accelerometer/X", A_X );
-  Firebase.setDouble(firebaseData, "/Test/MinIMU-9/Accelerometer/Y", A_Y );
-  Firebase.setDouble(firebaseData, "/Test/MinIMU-9/Accelerometer/Z", A_Z );
-  Firebase.setDouble(firebaseData, "/Test/MinIMU-9/Gyroscope/X", G_X );
-  Firebase.setDouble(firebaseData, "/Test/MinIMU-9/Gyroscope/Y", G_Y );
-  Firebase.setDouble(firebaseData, "/Test/MinIMU-9/Gyroscope/Z", G_Z );
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/MinIMU-9/Accelerometer/X", A_X );
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/MinIMU-9/Accelerometer/Y", A_Y );
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/MinIMU-9/Accelerometer/Z", A_Z );
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/MinIMU-9/Gyroscope/X", G_X );
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/MinIMU-9/Gyroscope/Y", G_Y );
+  Firebase.setDouble(firebaseData, "/Systems/Ddd3/MinIMU-9/Gyroscope/Z", G_Z );
+
+  Firebase.setFloat(firebaseData, "/Systems/Ddd3/Speed", windspeedcorrected);
   
 //
 //  Firebase.setDouble(firebaseData, "/Test/GPS/Satellite Count", satelliteCount);

@@ -122,6 +122,10 @@ public class HistoryActivity extends AppCompatActivity {
 
 
     }
+    public void back(View view) {
+        startActivity(new Intent(getApplicationContext(),HomeActivity.class));
+
+    }
     public void Graph(View view){
 
 
@@ -131,10 +135,6 @@ public class HistoryActivity extends AppCompatActivity {
         extras.putString("Name", record2);
         intent.putExtras(extras);
         startActivity(intent);
-//        Intent i = new Intent(getApplicationContext(), DataActivity.class);
-//        i.putExtra("STRING_I_NEED", record );
-//        i.putExtra("Name", editText2.getText());
-//
-//        startActivity(i);
+
     }
 }
