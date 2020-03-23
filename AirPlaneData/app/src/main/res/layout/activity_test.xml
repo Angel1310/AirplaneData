@@ -5,13 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".TestActivity">
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@id/linechart"
-        android:layout_width="match_parent"
-        android:layout_height="341dp"
+        android:layout_width="356dp"
+        android:layout_height="256dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="59dp"
-        tools:ignore="MissingConstraints"></com.github.mikephil.charting.charts.LineChart>
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="5dp"></com.github.mikephil.charting.charts.LineChart>
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -20,10 +22,10 @@
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintHorizontal_bias="0.574"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.639">
+        app:layout_constraintVertical_bias="0.524">
 
         <Spinner
             android:id="@+id/spinner"
@@ -36,15 +38,39 @@
             android:id="@+id/buttonn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="BUTTON"
+            android:text="Add"
             tools:layout_editor_absoluteX="-20dp"
             tools:layout_editor_absoluteY="16dp" />
 
-        <TextView
-            android:id="@+id/display"
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.574"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.691">
+
+        <Spinner
+            android:id="@+id/spinner2"
+            android:layout_width="368dp"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+        <Button
+            android:id="@+id/buttonn2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="Remove"
+            tools:layout_editor_absoluteX="-20dp"
+            tools:layout_editor_absoluteY="16dp" />
 
 
     </LinearLayout>

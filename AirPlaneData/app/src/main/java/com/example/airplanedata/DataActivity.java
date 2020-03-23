@@ -49,7 +49,7 @@ public class DataActivity extends AppCompatActivity {
     String userId;
     private static final String TAG = "";
     FirebaseDatabase database;
-    TextView textView6, textView3, textView7, textView5;
+    TextView textView6, textView3, textView7, textView5, textView8, textView9;
 
 
     Handler handler = new Handler();
@@ -83,6 +83,8 @@ public class DataActivity extends AppCompatActivity {
         textView3 = findViewById(R.id.textView3);
         textView7 = findViewById(R.id.textView7);
         textView5 = findViewById(R.id.textView5);
+        textView8 = findViewById(R.id.textView8);
+        textView9 = findViewById(R.id.textView9);
 
 
 
@@ -138,6 +140,21 @@ public class DataActivity extends AppCompatActivity {
             }
         });
 
+        database.getReference(new StringBuilder("Systems/").append(System).append("/BME680/Humidity").toString()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String value = String.valueOf(round( dataSnapshot.getValue(Double.class),2));
+                textView8.setText(value + " %");
+                Log.d(TAG, "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
         database.getReference(new StringBuilder("Systems/").append(System).append("/BME680/Pressure").toString()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -153,6 +170,22 @@ public class DataActivity extends AppCompatActivity {
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+        database.getReference(new StringBuilder("Systems/").append(System).append("/BME680/Approx-Altitude").toString()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String value = String.valueOf(round( dataSnapshot.getValue(Double.class),2));
+                textView9.setText(value + " m");
+                Log.d(TAG, "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
 
 
         refresh = new Runnable() {
@@ -194,6 +227,42 @@ public class DataActivity extends AppCompatActivity {
                             y = (float) round(dataSnapshot.getValue(Float.class),2);
 
                             database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Pressure").child(id).setValue(y);
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    database.getReference(new StringBuilder("Systems/").append(System).append("/BME680/Humidity").toString()).addValueEventListener(new ValueEventListener() {
+                        final String id = database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Humidity").push().getKey();
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            float y=0;
+                            y = (float) round(dataSnapshot.getValue(Float.class),2);
+
+                            database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Humidity").child(id).setValue(y);
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    database.getReference(new StringBuilder("Systems/").append(System).append("/BME680/Approx-Altitude").toString()).addValueEventListener(new ValueEventListener() {
+                        final String id = database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Approx-Altitude").push().getKey();
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            float y=0;
+                            y = (float) round(dataSnapshot.getValue(Float.class),2);
+
+                            database.getReference("users").child(userId).child("systems").child(System).child(Name).child("Graph").child("Approx-Altitude").child(id).setValue(y);
 
 
                         }

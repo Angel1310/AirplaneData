@@ -68,14 +68,16 @@ public class TestActivity extends AppCompatActivity {
     LineData data2;
 
 
-    Spinner sp ;
+    Spinner sp, sp2;
 
 
 
     ArrayAdapter<String> adapter;
+    ArrayAdapter<String> adapter2;
 
 
-    String record= "";
+    String record= "", record2 = "";
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +102,7 @@ public class TestActivity extends AppCompatActivity {
         assert user != null;
         userId = user.getUid();
         sp = (Spinner)findViewById(R.id.spinner);
+        sp2 = (Spinner)findViewById(R.id.spinner2);
         mChart = (LineChart) findViewById(R.id.linechart);
 //        mChart.setDragEnabled(true);
 //        mChart.setScaleEnabled(false);
@@ -112,7 +115,11 @@ public class TestActivity extends AppCompatActivity {
 
 
 
-
+        final List<String> lst2 = new ArrayList<String>();
+        lst2.add("Pressure");
+        lst2.add("Temperature");
+        lst2.add("GAS");
+        lst2.add("Speed");
 
         final List<String> lst = new ArrayList<String>();
         lst.add("Pressure");
@@ -152,6 +159,34 @@ public class TestActivity extends AppCompatActivity {
 
 
                 });
+        adapter2 = new ArrayAdapter<String>(TestActivity.this, android.R.layout.simple_list_item_1, lst2);
+
+        sp2.setAdapter(adapter2);
+        sp2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, final int position, long id) {
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        record2 = lst.get(position);
+
+                    }
+
+
+                });
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+
+        });
 
 
 
@@ -255,6 +290,7 @@ public class TestActivity extends AppCompatActivity {
                 speedSet = new LineDataSet(values, "Speed");
                 speedSet.setColor(Color.BLUE);
                 addDataSets();
+
             }
 
             @Override
@@ -275,6 +311,22 @@ public class TestActivity extends AppCompatActivity {
         for (ILineDataSet set : dataSets) {
             if (set.getLabel().equals(record)) {
                 addDataSets.add(set);
+            }
+        }
+
+        data2 = new LineData(addDataSets);
+        mChart.setData(data2);
+
+
+    }
+    public void deleteDataSets() {
+
+
+
+
+        for (ILineDataSet set : addDataSets) {
+            if (set.getLabel().equals(record2)) {
+                addDataSets.remove(set);
             }
         }
 
